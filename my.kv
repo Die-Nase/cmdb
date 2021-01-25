@@ -1,13 +1,16 @@
 #: import TreeViewLabel kivy.uix.treeview.TreeViewLabel
 
-<FloatLayout>:
+<DatabaseManager>:
     name: "test"
     BoxLayout:
 
         TreeView:
             id: tv
+            hide_root: True
+
         Button:
             size: (200,50)
             size_hint: (None, None)
             text: "add_node"
-            on_press: tv.add_node(TreeViewLabel(text = "Node..."))
+            on_press: root.say_hello()
+            
