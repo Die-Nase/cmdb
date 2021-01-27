@@ -17,6 +17,14 @@ class InvestigationORM(Base):
     comments = relationship('CommentORM', secondary = 'link')
     studies = relationship('StudyORM', secondary = 'link2')
 
+    def attr2node(self):
+        tree = {'node_id': self.identifier,
+                'children': [{'node_id': 'studies',
+                              'children': []},
+                             {'node_id': 'comments',
+                              'children': []}]}
+        return tree
+
 
 class CommentORM(Base):
     __tablename__ = "comment"

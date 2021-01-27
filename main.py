@@ -27,17 +27,17 @@ def populate_tree_view(tree_view, parent, node):
         populate_tree_view(tree_view, tree_node, child_node)
 
 
-tree = {'node_id': '1',
-        'children': [{'node_id': '1.1',
-                      'children': [{'node_id': '1.1.1',
-                                    'children': [{'node_id': '1.1.1.1',
-                                                  'children': []}]},
-                                   {'node_id': '1.1.2',
-                                    'children': []},
-                                   {'node_id': '1.1.3',
-                                    'children': []}]},
-                      {'node_id': '1.2',
-                       'children': []}]}
+# tree = {'node_id': '1',
+#         'children': [{'node_id': '1.1',
+#                       'children': [{'node_id': '1.1.1',
+#                                     'children': [{'node_id': '1.1.1.1',
+#                                                   'children': []}]},
+#                                    {'node_id': '1.1.2',
+#                                     'children': []},
+#                                    {'node_id': '1.1.3',
+#                                     'children': []}]},
+#                       {'node_id': '1.2',
+#                        'children': []}]}
 
 
 class DatabaseManager(FloatLayout):
@@ -45,14 +45,17 @@ class DatabaseManager(FloatLayout):
         super(DatabaseManager, self).__init__(**kwargs)
 
     def say_hello(self):
-        populate_tree_view(self.ids.tv, None, tree)
+        #populate_tree_view(self.ids.tv, None, tree)
         print('hello')
         self.fill_screen()
 
     def create_tree(self, orm_list):
-        tree = {''}
+        for node in [i for i in self.ids.tv.iterate_all_nodes()]:
+            self.ids.tv.remove_node(node)
+        self.ids.tv.hide_root = False
+        self.ids.tv.root_options=dict(text=orm_list[0].__tablename__)
         for item in orm_list:
-            print(item.title)
+            populate_tree_view(self.ids.tv, None, item.attr2node())
 
     def fill_screen(self):
         I_list = session.query(InvestigationORM).all()
@@ -66,5 +69,5 @@ class MyApp(App):
         return DatabaseManager()
 
 
-# if __name__ == "__main__":
-#     MyApp().run()
+if __name__ == "__main__":
+    MyApp().run()
