@@ -5,6 +5,7 @@ from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.treeview import TreeView,TreeViewLabel
+from kivy.core.window import Window
 
 from ORM import *
 engine = create_engine('sqlite:///test.db', echo = True)
@@ -14,6 +15,7 @@ Session = sessionmaker(bind = engine)
 session = Session()
 
 #from kivy.uix.boxlayout import BoxLayout
+print(Window.get_parent_layout)
 
 def populate_tree_view(tree_view, parent, node):
     if parent is None:
@@ -47,6 +49,7 @@ class DatabaseManager(FloatLayout):
     def say_hello(self):
         #populate_tree_view(self.ids.tv, None, tree)
         print('hello')
+        print(dir(self))
         self.fill_screen()
 
     def create_tree(self, orm_list):

@@ -1,8 +1,14 @@
 #: import TreeViewLabel kivy.uix.treeview.TreeViewLabel
+#:import GetSystemMetrics win32api.GetSystemMetrics
+
 
 <DatabaseManager>:
-    name: "test"
+    #size: GetSystemMetrics(0), GetSystemMetrics(1)
+    #size: 1000, 400
+
     BoxLayout:
+        size_hint: .5, 1
+        pos_hint: {"x":0, "top":1}
 
         TreeView:
             id: tv

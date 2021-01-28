@@ -1,12 +1,4 @@
-from ORM import *
+from win32api import GetSystemMetrics
 
-I = InvestigationORM()
-
-def row2dict(row):
-    d = {}
-    for column in row.__table__.columns:
-        d[column.name] = str(getattr(row, column.name))
-
-    return d
-
-print(I.comments)
+print("Width =", GetSystemMetrics(0))
+print("Height =", GetSystemMetrics(1))
