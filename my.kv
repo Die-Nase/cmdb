@@ -1,14 +1,16 @@
 #: import TreeViewLabel kivy.uix.treeview.TreeViewLabel
-#:import GetSystemMetrics win32api.GetSystemMetrics
-
+<TreeViewLabel>:
+    on_touch_down:
+        print(self.text)
+        app.root.display_metadata(self.parent,self)
 
 <DatabaseManager>:
-    #size: GetSystemMetrics(0), GetSystemMetrics(1)
-    #size: 1000, 400
 
     BoxLayout:
-        size_hint: .5, 1
+        id: left
+        size_hint: .3, 1
         pos_hint: {"x":0, "top":1}
+        orientation: 'vertical'
 
         TreeView:
             id: tv
@@ -19,4 +21,9 @@
             size_hint: (None, None)
             text: "add_node"
             on_press: root.say_hello()
+    
+    FloatLayout:
+        id: right
+        size_hint: .7, 1
+        pos_hint: {"x":.3, "top":1}
             
