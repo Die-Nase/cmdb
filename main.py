@@ -7,6 +7,8 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.treeview import TreeView,TreeViewLabel
 from kivy.core.window import Window
+from kivy.uix.boxlayout import BoxLayout
+
 
 from screeninfo import get_monitors
 
@@ -14,11 +16,10 @@ from ORM import *
 engine = create_engine('sqlite:///test.db', echo = True)
 Base.metadata.create_all(engine)
 from sqlalchemy.orm import sessionmaker
+import sqlalchemy
 Session = sessionmaker(bind = engine)
 session = Session()
 
-#from kivy.uix.boxlayout import BoxLayout
-print(Window.get_parent_layout)
 
 def populate_tree_view(tree_view, parent, node):
     if parent is None:
@@ -47,29 +48,43 @@ class DatabaseManager(FloatLayout):
         self.ids.tv.hide_root = False
         self.ids.tv.root_options=dict(text=orm_list[0].__tablename__)
         for item in orm_list:
-            populate_tree_view(self.ids.tv, None, item.attr2node())
+            populate_tree_view(self.ids.tv, None, self.attr2node(item))
 
     def fill_screen(self):
-        I_list = session.query(InvestigationORM).all()
+        I_list = session.query(Investigation).all()
         self.create_tree(I_list)
 
     def display_metadata(self, tree, selected_node):
+        self.ids.right.clear_widgets(self.ids.right.children)
+        obj_id = int(selected_node.text.split('id:')[1])
         for model in Base.__subclasses__():
             # print(model.__tablename__)
             if model.__tablename__ == selected_node.parent_node.text:
                 orm_model = model
-        selected_object = session.query(orm_model).filter(orm_model.identifier == selected_node.text).one()
+        selected_object = session.query(orm_model).filter(orm_model.id == obj_id).one()
         
         clms = dict(selected_object.__table__.columns)
-        desc = list(clms.keys())
-        value = 0
+        clms_keys = list(clms.keys())
         count = 0
         for clm in clms:
-            label = Label(text = desc[count], pos = (0, value))
+            label = Label(text = clms_keys[count])
+            textinput = TextInput(text = str(selected_object.__dict__[clms_keys[count]]))
             self.ids.right.add_widget(label)
-            value = value + 50
-            count = count +1
+            self.ids.right.add_widget(textinput)
+            count = count + 1
 
+    def attr2node(self, obj):
+        if hasattr(obj, 'identifier'):
+            desc = obj.identifier
+        elif hasattr(obj, 'name'):
+            desc = obj.name
+        node_id = str(desc) + " id:"+ str(obj.id)
+        tree = {'node_id': node_id, 'children':[]}
+        obj_dict = obj.__dict__
+        for key in obj_dict.keys():
+            if isinstance(obj_dict[key],sqlalchemy.orm.collections.InstrumentedList):
+                tree['children'].append({'node_id': str(key),'children': []})
+        return tree
 
 
 class MyApp(App):

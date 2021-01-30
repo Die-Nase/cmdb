@@ -2,7 +2,7 @@
 <TreeViewLabel>:
     on_touch_down:
         print(self.text)
-        app.root.display_metadata(self.parent,self)
+        app.root.display_metadata(self.parent, self)
 
 <DatabaseManager>:
 
@@ -22,8 +22,11 @@
             text: "add_node"
             on_press: root.say_hello()
     
-    FloatLayout:
+    GridLayout:
         id: right
         size_hint: .7, 1
         pos_hint: {"x":.3, "top":1}
+        cols: 2
+        row_force_default: True
+        row_default_height: 40
             

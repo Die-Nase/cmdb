@@ -1,12 +1,12 @@
 from sqlalchemy import create_engine, ForeignKey, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from isatools.model import *
+import isatools.model as isa
 
 Base = declarative_base()
 
 
-class InvestigationORM(Base):
+class Investigation(Base):
     __tablename__ = "investigation"
 
     id = Column(Integer, primary_key=True)
@@ -14,19 +14,19 @@ class InvestigationORM(Base):
     identifier = Column(String)
     title = Column(String)
     description = Column(String)
-    comments = relationship('CommentORM', secondary = 'link')
-    studies = relationship('StudyORM', secondary = 'link2')
+    comments = relationship('Comment', secondary = 'link', lazy='subquery')
+    studies = relationship('Study', secondary = 'link2', lazy='subquery')
 
-    def attr2node(self):
-        tree = {'node_id': self.identifier,
-                'children': [{'node_id': 'studies',
-                              'children': []},
-                             {'node_id': 'comments',
-                              'children': []}]}
-        return tree
+    # def attr2node(self):
+    #     tree = {'node_id': self.identifier,
+    #             'children': [{'node_id': 'studies',
+    #                           'children': []},
+    #                          {'node_id': 'comments',
+    #                           'children': []}]}
+    #     return tree
 
 
-class CommentORM(Base):
+class Comment(Base):
     __tablename__ = "comment"
     
     id = Column(Integer, primary_key=True)
@@ -37,7 +37,7 @@ class CommentORM(Base):
         return()
 
 
-class StudyORM(Base):
+class Study(Base):
     __tablename__ = "study"
     
     id = Column(Integer, primary_key=True)
@@ -45,7 +45,7 @@ class StudyORM(Base):
     identifier = Column(String)
     title = Column(String)
     description = Column(String)
-    comments = relationship("CommentORM", secondary = 'link')
+    comments = relationship("Comment", secondary = 'link')
 
 
 class Link(Base):
@@ -64,7 +64,7 @@ class Link2(Base):
 
 
 def investigation_orm2isa(orm_obj):
-    isa_obj = Investigation(id_= str(orm_obj.id), filename=orm_obj.filename,
+    isa_obj = isa.Investigation(id_= str(orm_obj.id), filename=orm_obj.filename,
                         identifier=orm_obj.identifier, title=orm_obj.title,
                         description=orm_obj.description)
     for comment in orm_obj.comments:
@@ -75,14 +75,14 @@ def investigation_orm2isa(orm_obj):
 
 
 def investigation_isa2orm(isa_obj):
-    orm_obj = InvestigationORM(filename=isa_obj.filename,
+    orm_obj = Investigation(filename=isa_obj.filename,
                         identifier=isa_obj.identifier, title=isa_obj.title,
                         description=isa_obj.description)
     if not(isa_obj.id == 'None'):
         orm_obj = int(isa_obj.id)
 
     for comment in isa_obj.comments:
-        C = CommentORM(name = comment.name,value = comment.value)
+        C = Comment(name = comment.name,value = comment.value)
         # if not.isinstance(comment.id, None):
         # orm_obj = int(isa_obj.id)
         orm_obj.comments.append(C)
